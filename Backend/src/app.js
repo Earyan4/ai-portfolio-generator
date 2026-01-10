@@ -12,12 +12,17 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 
 
-const corsOptions = {
-    origin: [process.env.ALLOWED_SITE],
-    credentials: true
-};
+app.use(
+  cors({
+    origin: [
+      "https://ai-portfolio-generator1.netlify.app",
+    ],
+    credentials: true,
+  })
+);
 
-app.use(cors(corsOptions));
+
+
 
 app.use("/api/users", userRouter);
 app.use("/api/resumes", resumeRouter);

@@ -106,31 +106,32 @@ const loginUser = async (req, res) => {
       { expiresIn: process.env.JWT_SECRET_EXPIRES_IN } // Add token expiration for better security
     );
 
-    const cookieOptions = {
-      httpOnly: true,
-      expires: new Date(Date.now() + 24 * 60 * 60 * 1000), // Set cookie to expire in 1 day
-      sameSite: process.env.NODE_ENV == "Dev" ? "lax" : "none", // Set SameSite attribute for better security
-      secure: process.env.NODE_ENV == "Dev" ? false : true, // Set Secure attribute for better security
-    };
+const cookieOptions = {
+  httpOnly: true,
+  secure: true,          // REQUIRED for HTTPS (Netlify)
+  sameSite: "none",      // REQUIRED for cross-site cookies
+  maxAge: 24 * 60 * 60 * 1000, // 1 day
+};
     
 
     console.log("Login Successful");
     return res
-      .cookie("token", jwtToken, cookieOptions)
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          {
-            user: {
-              id: user._id,
-              email: user.email,
-              fullName: user.fullName,
-            },
-          },
-          "User logged in successfully."
-        )
-      );
+  .cookie("token", jwtToken, cookieOptions)
+  .status(200)
+  .json(
+    new ApiResponse(
+      200,
+      {
+        user: {
+          id: user._id,
+          email: user.email,
+          fullName: user.fullName,
+        },
+      },
+      "User logged in successfully."
+    )
+  );
+
   } catch (err) {
     console.log("Login Failed: Server error");
     console.error("Error during login:", err);
